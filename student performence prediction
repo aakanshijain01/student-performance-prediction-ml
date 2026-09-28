@@ -1,0 +1,196 @@
+import json
+
+FILE_NAME = "students.json"
+
+
+# Load students from file
+def load_students():
+    try:
+        with open(FILE_NAME, "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return []
+
+
+# Save students to file
+def save_students():
+    with open(FILE_NAME, "w") as file:
+        json.dump(students, file, indent=4)
+
+
+# Add student
+def add_student():
+    print("\n--- Add Student ---")
+
+    name = input("Enter student name: ")
+    attendance = float(input("Enter attendance percentage: "))
+    internal = float(input("Enter internal marks: "))
+    assignment = float(input("Enter assignment marks: "))
+    previous = float(input("Enter previous exam marks: "))
+
+    student = {
+        "name": name,
+        "attendance": attendance,
+        "internal": internal,
+        "assignment": assignment,
+        "previous": previous
+    }
+
+    students.append(student)
+
+    save_students()
+
+    print("\nStudent saved successfully!")
+
+
+# Calculate total and average
+def calculate_performance(student):
+    total = (
+        student["internal"]
+        + student["assignment"]
+        + student["previous"]
+    )
+
+    average = total / 3
+
+    return total, average
+
+
+# Predict performance
+def predict_performance(average, attendance):
+
+    if average >= 75 and attendance >= 75:
+        return "Excellent Performance"
+
+    elif average >= 60 and attendance >= 60:
+        return "Good Performance"
+
+    elif average >= 40:
+        return "Average Performance"
+
+    else:
+        return "Needs Improvement"
+
+
+# Show one student's report
+def display_report(student):
+
+    total, average = calculate_performance(student)
+
+    prediction = predict_performance(
+        average,
+        student["attendance"]
+    )
+
+    print("\n================================")
+    print("       STUDENT REPORT")
+    print("================================")
+
+    print("Name        :", student["name"])
+    print("Attendance  :", student["attendance"], "%")
+    print("Internal    :", student["internal"])
+    print("Assignment  :", student["assignment"])
+    print("Previous    :", student["previous"])
+
+    print("--------------------------------")
+
+    print("Total Marks :", total)
+    print("Average     :", round(average, 2))
+    print("Prediction  :", prediction)
+
+    print("================================")
+
+
+# View ALL students
+def display_all_students():
+
+    print("\n================================")
+    print("          ALL STUDENTS")
+    print("================================")
+
+    if len(students) == 0:
+        print("No students found.")
+        return
+
+    for i in range(len(students)):
+
+        student = students[i]
+
+        total, average = calculate_performance(student)
+
+        prediction = predict_performance(
+            average,
+            student["attendance"]
+        )
+
+        print("\nStudent", i + 1)
+        print("----------------------------")
+        print("Name       :", student["name"])
+        print("Attendance :", student["attendance"], "%")
+        print("Internal   :", student["internal"])
+        print("Assignment :", student["assignment"])
+        print("Previous   :", student["previous"])
+        print("Total      :", total)
+        print("Average    :", round(average, 2))
+        print("Prediction :", prediction)
+
+    print("\n================================")
+
+
+# Load saved students when program starts
+students = load_students()
+
+
+# Main menu
+while True:
+
+    print("\n================================")
+    print(" STUDENT PERFORMANCE PREDICTOR")
+    print("================================")
+    print("1. Add Student")
+    print("2. View Student Report")
+    print("3. View All Students")
+    print("4. Exit")
+    print("================================")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+
+        add_student()
+
+    elif choice == "2":
+
+        if len(students) == 0:
+            print("\nNo students available.")
+
+        else:
+
+            name = input("Enter student name: ")
+
+            found = False
+
+            for student in students:
+
+                if student["name"].lower() == name.lower():
+
+                    display_report(student)
+
+                    found = True
+                    break
+
+            if found == False:
+                print("\nStudent not found.")
+
+    elif choice == "3":
+
+        display_all_students()
+
+    elif choice == "4":
+
+        print("\nThank you for using Student Performance Predictor!")
+        break
+
+    else:
+
+        print("\nInvalid choice. Please try again.")
